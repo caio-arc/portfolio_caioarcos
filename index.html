@@ -21,6 +21,7 @@
 <main>
 <section id="inicio" class="hero container">
 <div>
+<img class="profile-photo" src="images/profile.jpg" alt="Foto de perfil de Caio Arcos Melo">
 <p class="label">SUPORTE TÉCNICO • INFRAESTRUTURA • REDES</p>
 <h1>Caio Arcos Melo</h1>
 <h2>Suporte Técnico com foco em Infraestrutura e Redes.</h2>
@@ -135,6 +136,61 @@ ip dhcp pool LAN10
 <p>Topologia com múltiplos PCs utilizando a rede 192.168.50.0/24, aplicada para praticar endereçamento, conectividade e validação de comunicação.</p>
 <figure><img src="images/02-desafio-ipv4.png" alt="Desafio prático de endereçamento IPv4 no Packet Tracer"><figcaption>Desafio prático com quatro hosts e endereçamento IPv4.</figcaption></figure>
 <div class="tags"><span>IPv4</span><span>Ping</span><span>Switching</span><span>Packet Tracer</span></div>
+</article>
+</section>
+
+<section class="section container">
+<article class="project">
+<div class="project-head"><span>PROJETO 08 • EVE-NG</span><h3>Laboratório MikroTik — VLANs, DHCP, NAT e Firewall</h3></div>
+<div class="project-grid">
+<div><h4>Laboratório</h4><p>Implementação prática em EVE-NG com MikroTik conectado a switches, utilizando VLAN 10, VLAN 20 e VLAN 30, gateways por VLAN, pools DHCP, cliente DHCP na WAN, DNS, NAT e regras de firewall.</p></div>
+<div><h4>Competências</h4><p>VLAN, trunk, gateways, DHCP Server, DHCP Client, DNS, NAT masquerade, firewall filter, controle de comunicação entre VLANs e troubleshooting.</p></div>
+</div>
+<figure><img src="images/eve-ng/01-topologia-eve-ng.png" alt="Topologia do laboratório MikroTik no EVE-NG"><figcaption>Topologia do laboratório no EVE-NG com MikroTik, switches, WAN e hosts das VLANs.</figcaption></figure>
+<div class="project-grid">
+<div><h4>Endereçamento</h4><p>VLAN 10: <code>192.168.10.1/24</code> • VLAN 20: <code>192.168.20.1/24</code> • VLAN 30: <code>192.168.30.1/24</code> • WAN: <code>192.168.136.129/24</code>.</p></div>
+<div><h4>DHCP</h4><p>Pools para VLAN 10, VLAN 20 e VLAN 30, com faixas <code>.10–.254</code> e lease time de 30 minutos.</p></div>
+</div>
+<h4>Configurações realizadas</h4>
+<div class="codebox"><pre>/interface bridge add name=BR-TRUNK
+/interface bridge port add bridge=BR-TRUNK interface=ether1
+/interface vlan add interface=BR-TRUNK name=VLAN10 vlan-id=10
+/interface vlan add interface=BR-TRUNK name=VLAN20 vlan-id=20
+
+/ip address add address=192.168.10.1/24 interface=VLAN10
+/ip address add address=192.168.20.1/24 interface=VLAN20
+
+/ip pool add name=POOL-VLAN10 ranges=192.168.10.10-192.168.10.254
+/ip pool add name=POOL-VLAN20 ranges=192.168.20.10-192.168.20.254
+
+/ip dhcp-server add name=DHCP-VLAN10 interface=VLAN10 address-pool=POOL-VLAN10 disabled=no
+/ip dhcp-server network add address=192.168.10.0/24 gateway=192.168.10.1 dns-server=8.8.8.8
+/ip dhcp-server add name=DHCP-VLAN20 interface=VLAN20 address-pool=POOL-VLAN20 disabled=no
+/ip dhcp-server network add address=192.168.20.0/24 gateway=192.168.20.1 dns-server=8.8.8.8
+
+/ip dhcp-client add interface=ether1 disabled=no
+/ip dns set servers=8.8.8.8,1.1.1.1 allow-remote-requests=yes
+/ip dhcp-client set [find interface=ether4] use-peer-dns=no
+/ip firewall nat add chain=srcnat out-interface=ether4 action=masquerade comment="NAT INTERNET"
+
+/ip firewall filter add chain=forward connection-state=established,related action=accept comment="ACEITAR ESTABELECIDAS"
+/ip firewall filter add chain=forward src-address=192.168.10.0/24 dst-address=192.168.20.0/24 action=accept comment="VLAN10 -> VLAN20 PERMITIR"
+/ip firewall filter add chain=forward src-address=192.168.20.0/24 dst-address=192.168.10.0/24 action=drop comment="BLOQUEAR VLAN20 -> VLAN10"
+/ip firewall filter add chain=input protocol=icmp action=accept comment="INPUT - ICMP"
+/ip firewall filter add chain=input src-address=192.168.10.0/24 action=accept comment="INPUT - VLAN10"
+/ip firewall filter add chain=input action=drop comment="INPUT - BLOQUEAR RESTANTE"</pre></div>
+<h4>Evidências do laboratório</h4>
+<div class="eve-gallery">
+<figure><img src="images/eve-ng/02-vlan-brief.png" alt="VLAN brief no switch"><figcaption>VLANs ativas e portas associadas.</figcaption></figure>
+<figure><img src="images/eve-ng/03-addresses.png" alt="Endereços IP no MikroTik"><figcaption>Endereçamento configurado nas interfaces VLAN e WAN.</figcaption></figure>
+<figure><img src="images/eve-ng/04-dhcp-servers-pools.png" alt="Servidores DHCP e pools"><figcaption>DHCP Servers e pools das VLANs.</figcaption></figure>
+<figure><img src="images/eve-ng/05-dhcp-client.png" alt="DHCP client no MikroTik"><figcaption>DHCP Client e endereço WAN.</figcaption></figure>
+<figure><img src="images/eve-ng/06-firewall-filter.png" alt="Regras de firewall MikroTik"><figcaption>Regras de firewall para controle entre VLANs.</figcaption></figure>
+<figure><img src="images/eve-ng/07-firewall-rules.png" alt="Regras adicionais de firewall"><figcaption>Regras de bloqueio entre VLANs 30, 10 e 20.</figcaption></figure>
+<figure><img src="images/eve-ng/08-vlan-brief-final.png" alt="Validação final das VLANs"><figcaption>Validação final das VLANs no switch.</figcaption></figure>
+</div>
+<div class="tags"><span>EVE-NG</span><span>MikroTik</span><span>VLAN 10</span><span>VLAN 20</span><span>VLAN 30</span><span>DHCP</span><span>NAT</span><span>Firewall</span><span>Trunk</span></div>
+<p class="note"><a href="labs/configuracoes-mikrotik-eve-ng.docx">Abrir documento com as configurações realizadas</a></p>
 </article>
 </section>
 
