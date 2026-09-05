@@ -1,8 +1,0 @@
-CHECKLIST ANTES DE PUBLICAR
-
-[ ] Abrir index.html e revisar o conteúdo
-[ ] Trocar o link genérico do LinkedIn pelo perfil real
-[ ] Trocar o link genérico do GitHub pelo perfil real
-[ ] Conferir telefone e e-mail
-[ ] Conferir todos os projetos, imagens dos laboratórios e fotos dos racks
-[ ] Publicar em GitHub Pages (ou outro serviço de hospedagem)
